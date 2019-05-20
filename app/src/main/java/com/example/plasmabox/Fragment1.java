@@ -19,53 +19,46 @@ public class Fragment1 extends Fragment {
     Button button1;
     Button button2;
 
-    ConnectActivity connectActivity;
 
 
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        connectActivity = new ConnectActivity();
         super.onCreate(savedInstanceState);
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View fragement1View = inflater.inflate(R.layout.page_1, container,false);
-        button = fragement1View.findViewById(R.id.button);
-        button1 = fragement1View.findViewById(R.id.button1);
-        button2 = fragement1View.findViewById(R.id.button2);
+        View fragment1View = inflater.inflate(R.layout.page_1, container,false);
+        button = fragment1View.findViewById(R.id.button);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity().getApplicationContext(), "Button pressed!", Toast.LENGTH_SHORT).show();
-                Intent syncIntent = new Intent(getActivity(), SyncActivity.class);
-                startActivityForResult(syncIntent,1000);
-            }
-        });
+        return fragment1View;
+    }
 
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(), "CMD 1",Toast.LENGTH_SHORT).show();
+    @Override
+    public void setUserVisibleHint(boolean visible)
+    {
+        super.setUserVisibleHint(visible);
+        if (visible && isResumed())
+        {
+            //Only manually call onResume if fragment is already visible
+            //Otherwise allow natural fragment lifecycle to call onResume
+            onResume();
+        }
+    }
 
-                connectActivity.writeData("[1LFF]", connectActivity.mWriteCharacteristic);
-
-
-            }
-        });
-
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(), "CMD 2",Toast.LENGTH_SHORT).show();
-                connectActivity.writeData("[1L01]", connectActivity.mWriteCharacteristic);
-            }
-        });
-        return fragement1View;
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        if (!getUserVisibleHint())
+        {
+            return;
+        }
+        //INSERT CUSTOM CODE HERE
+        ((MainActivity)getActivity()).writeData("[1E0]", ((MainActivity)getActivity()).mWriteCharacteristic);
     }
 
     @Override

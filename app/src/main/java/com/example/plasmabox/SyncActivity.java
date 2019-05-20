@@ -102,17 +102,17 @@ public class SyncActivity extends AppCompatActivity {
 
                 // OnItemClick fires intent to connect to device
 
-                final Intent intent = new Intent(getApplicationContext(), ConnectActivity.class);
-                intent.putExtra(ConnectActivity.EXTRAS_DEVICE_NAME, device.getName());
-                intent.putExtra(ConnectActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+                final Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra(MainActivity.EXTRAS_DEVICE_NAME, device.getName());
+                intent.putExtra(MainActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
 
                 if (mScanning) {
                     mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     mScanning = false;
                 }
 
+                startActivity(intent);
 
-                startActivityForResult(intent,2000);
             }
         });
 
