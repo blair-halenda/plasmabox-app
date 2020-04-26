@@ -44,6 +44,6 @@ public class Fragment3 extends Fragment {
         }
 
         //INSERT CUSTOM CODE HERE
-        ((MainActivity)getActivity()).writeData("[1E4]", ((MainActivity)getActivity()).mWriteCharacteristic);
+        //((MainActivity)getActivity()).writeData("[1E4]", ((MainActivity)getActivity()).mWriteCharacteristic);
     }
 }

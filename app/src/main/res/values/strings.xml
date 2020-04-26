@@ -36,4 +36,17 @@
     </string-array>
 
 
+    <!-- Presets -->
+    <string-array name="effects">
+        <item>Custom</item>
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Yellow</item>
+        <item>Orange</item>
+        <item>Purple</item>
+        <item>Teal</item>
+    </string-array>
+
+
 </resources>

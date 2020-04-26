@@ -21,17 +21,21 @@ import static android.app.Activity.RESULT_OK;
 public class Fragment1 extends Fragment {
 
     SeekBar seekBarBrightness;
+    SeekBar seekBarLength;
+    SeekBar seekBarSpeed;
 
     SeekBar seekBarRed;
     SeekBar seekBarGreen;
     SeekBar seekBarBlue;
 
 
-    int valueRed;
-    int valueGreen;
-    int valueBlue;
+    int rgb1[] = {255,0,0};
+    int rgb2[] = {0,255,0};
+    int rgb3[] = {0,0,255};
 
-    Button colorPicker;
+    Button colorPicker1;
+    Button colorPicker2;
+    Button colorPicker3;
 
     Spinner spinner;
 
@@ -49,16 +53,22 @@ public class Fragment1 extends Fragment {
         spinner = fragment1View.findViewById(R.id.spinner);
 
         seekBarBrightness = fragment1View.findViewById(R.id.seekBarBrightness);
-        colorPicker = fragment1View.findViewById(R.id.set_color);
+        seekBarSpeed = fragment1View.findViewById(R.id.seekBarSpeed);
+        seekBarLength = fragment1View.findViewById(R.id.seekBarLength);
+
+
+
+        colorPicker1 = fragment1View.findViewById(R.id.set_color_1);
+        colorPicker2 = fragment1View.findViewById(R.id.set_color_2);
+        colorPicker3 = fragment1View.findViewById(R.id.set_color_3);
 
         seekBarBrightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int brightness;
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int brightness = seekBarBrightness.getProgress();
-                String brightnessString = String.format("%02X", brightness & 0xFF);
-                String data = "[1B"+ brightnessString + "]";
-                Toast.makeText(getContext(),data,Toast.LENGTH_SHORT).show();
-                ((MainActivity)getActivity()).writeData(data, ((MainActivity)getActivity()).mWriteCharacteristic);
+                brightness = seekBarBrightness.getProgress();
+
             }
 
             @Override
@@ -68,18 +78,79 @@ public class Fragment1 extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                String brightnessString = String.format("%02X", brightness & 0xFF);
+                String data = "[1B"+ brightnessString + "]";
+                Toast.makeText(getContext(),data,Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).writeData(data, ((MainActivity)getActivity()).mWriteCharacteristic);
             }
         });
 
-        colorPicker.setOnClickListener(new View.OnClickListener() {
+        seekBarSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int speed;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                speed = seekBarSpeed.getProgress();
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                String speedString = String.format("%02X", speed & 0xFF);
+                String data = "[1S"+ speedString + "]";
+                Toast.makeText(getContext(),data,Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).writeData(data, ((MainActivity)getActivity()).mWriteCharacteristic);
+            }
+        });
+
+        seekBarLength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int length;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                length = seekBarLength.getProgress();
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                String lengthString = String.format("%02X", length & 0xFF);
+                String data = "[1L"+ lengthString + "]";
+                Toast.makeText(getContext(),data,Toast.LENGTH_SHORT).show();
+                ((MainActivity)getActivity()).writeData(data, ((MainActivity)getActivity()).mWriteCharacteristic);
+            }
+        });
+
+        colorPicker1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openDialog(false);
+                openDialog(false, rgb1, "a",colorPicker1);
             }
         });
 
+        colorPicker2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDialog(false, rgb2, "b",colorPicker2);
+            }
+        });
 
+        colorPicker3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDialog(false, rgb3, "c",colorPicker3);
+            }
+        });
 
         return fragment1View;
     }
@@ -105,7 +176,7 @@ public class Fragment1 extends Fragment {
             return;
         }
         //INSERT CUSTOM CODE HERE
-        ((MainActivity)getActivity()).writeData("[1E0]", ((MainActivity)getActivity()).mWriteCharacteristic);
+        //((MainActivity)getActivity()).writeData("[1E0]", ((MainActivity)getActivity()).mWriteCharacteristic);
     }
 
     @Override
@@ -121,8 +192,8 @@ public class Fragment1 extends Fragment {
 
     //-------------------------------- Color Picker ----------------------------------//
     private int currentColor;
-    private void openDialog(boolean supportAlpha){
-        AmbilWarnaDialog dialog = new AmbilWarnaDialog(getContext(), currentColor, supportAlpha, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+    private void openDialog(boolean supportAlpha, final int rgb[], final String colour_id, final Button colorPicker){
+        AmbilWarnaDialog dialog = new AmbilWarnaDialog(getContext(), Color.rgb(rgb[0],rgb[1],rgb[2]), supportAlpha, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onCancel(AmbilWarnaDialog dialog) {
             }
@@ -132,26 +203,26 @@ public class Fragment1 extends Fragment {
                 currentColor = color;
                 colorPicker.setBackgroundColor(currentColor);
 
-                valueRed = Color.red(color);
-                valueGreen = Color.green(color);
-                valueBlue = Color.blue(color);
+                rgb[0] = Color.red(color);
+                rgb[1] = Color.green(color);
+                rgb[2] = Color.blue(color);
 
-                updateColor();
+                updateColor(rgb, colour_id);
 
             }
         });
         dialog.show();
     }
 
-    //-------------------------------- Slider Updater ----------------------------------//
-    public void updateColor(){
-        int r = valueRed;
-        int g = valueGreen;
-        int b = valueBlue;
+    //-------------------------------- Slider 1 Updater ----------------------------------//
+    public void updateColor(int rgb[], String colour_id){
+        int r = rgb[0];
+        int g = rgb[1];
+        int b = rgb[2];
 
         String colorString = String.format("%02X", r & 0xFF) + String.format("%02X", g & 0xFF) + String.format("%02X", b & 0xFF);
         //setColor.setBackgroundColor(Color.rgb(r,g,b));
-        String data = "[1Ca"+ colorString + "]";
+        String data = "[1C" + colour_id + colorString + "]";
         Toast.makeText(getContext(),data,Toast.LENGTH_SHORT).show();
         ((MainActivity)getActivity()).writeData(data, ((MainActivity)getActivity()).mWriteCharacteristic);
     }

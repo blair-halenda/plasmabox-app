@@ -278,12 +278,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
+
+
     public void writeData(String str, BluetoothGattCharacteristic fWriteCharacteristic){
         if(fWriteCharacteristic != null && mConnected == true){
             byte[] strBytes = str.getBytes();
             byte[] bytes = fWriteCharacteristic.getValue();
             fWriteCharacteristic.setValue(strBytes);
             mBluetoothLeService.writeCharacteristic(fWriteCharacteristic);
+            try{
+                wait(10);
+            }catch (Exception ex){
+                Log.d("Exception thrown",ex.toString());
+            }
             Log.d("Result", "Wrote: " + str);
         }
         else{
@@ -300,3 +309,30 @@ public class MainActivity extends AppCompatActivity {
         return intentFilter;
     }
 }
+
+
+/*
+class sendData extends AsyncTask<Object, Object, Object>{
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected Object doInBackground(Object[] objects) {
+
+        return null;
+    }
+
+    @Override
+    protected void onProgressUpdate(Object[] values) {
+        super.onProgressUpdate(values);
+    }
+
+    @Override
+    protected void onPostExecute(Object o) {
+        super.onPostExecute(o);
+    }
+}
+*/
